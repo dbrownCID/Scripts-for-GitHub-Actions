@@ -170,6 +170,10 @@ def trash_emails(service, ids: list[str]):
 def main():
     print("Authenticating with Google…")
     creds = get_google_creds()
+
+    print("Token scopes:", creds.scopes)
+    print("Token valid:", creds.valid)
+
     service = build("gmail", "v1", credentials=creds)
 
     # Fast pre-pass — no AI needed, rule-based
