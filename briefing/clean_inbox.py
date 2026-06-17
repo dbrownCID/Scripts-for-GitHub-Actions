@@ -24,7 +24,6 @@ SCOPES = [
     "https://www.googleapis.com/auth/gmail.compose",
     "https://www.googleapis.com/auth/gmail.send",
     "https://www.googleapis.com/auth/calendar.readonly",
-    "https://mail.google.com/",
 ]
 
 # Matches MailReach random footer strings like: 258feo-Lz9Y-6994b2b-
@@ -67,17 +66,11 @@ def purge_mailreach_warmup(service) -> int:
         print("  No MailReach warmup emails found.")
         return 0
 
-    # Batch delete — permanently removes, skips trash
-    ids = [m["id"] for m in messages]
-    # Gmail batch delete accepts up to 1000 ids at a time
-    for i in range(0, len(ids), 1000):
-        batch = ids[i:i+1000]
-        service.users().messages().batchDelete(
-            userId="me",
-            body={"ids": batch}
-        ).execute()
+    # Move to trash instead of permanent delete
+    for msg_id in ids:
+        service.users().messages().trash(userId="me", id=msg_id).execute()
 
-    print(f"  🗑  Permanently deleted {len(ids)} MailReach warmup email(s)")
+    print(f"  🗑  Trashed {len(ids)} MailReach warmup email(s)")
     return len(ids)
 
 
