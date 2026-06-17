@@ -65,7 +65,7 @@ def purge_mailreach_warmup(service) -> int:
     if not messages:
         print("  No MailReach warmup emails found.")
         return 0
-
+    ids = [m["id"] for m in messages]
     # Move to trash instead of permanent delete
     for msg_id in ids:
         service.users().messages().trash(userId="me", id=msg_id).execute()
