@@ -40,7 +40,7 @@ def get_google_creds() -> Credentials:
         "scopes":        SCOPES,
     }
     creds = Credentials.from_authorized_user_info(token_data, SCOPES)
-    if creds.expired and creds.refresh_token:
+    if not creds.valid:
         creds.refresh(Request())
     return creds
 
