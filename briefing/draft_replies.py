@@ -33,12 +33,19 @@ scheduling, production workflows, and machine management (Tajima, Barudan equipm
 
 
 def get_google_creds() -> Credentials:
+    refresh_token = os.environ["GOOGLE_REFRESH_TOKEN"]
+    client_id = os.environ["GOOGLE_CLIENT_ID"]
+    client_secret = os.environ["GOOGLE_CLIENT_SECRET"]
+    print(f"GOOGLE_CLIENT_ID length: {len(client_id)}")
+    print(f"GOOGLE_CLIENT_SECRET length: {len(client_secret)}")
+    print(f"GOOGLE_REFRESH_TOKEN length: {len(refresh_token)}")
+    print(f"GOOGLE_REFRESH_TOKEN prefix: {refresh_token[:4]}")
     creds = Credentials(
         token=None,
-        refresh_token=os.environ["GOOGLE_REFRESH_TOKEN"],
+        refresh_token=refresh_token,
         token_uri="https://oauth2.googleapis.com/token",
-        client_id=os.environ["GOOGLE_CLIENT_ID"],
-        client_secret=os.environ["GOOGLE_CLIENT_SECRET"],
+        client_id=client_id,
+        client_secret=client_secret,
         scopes=SCOPES,
     )
     creds.refresh(Request())
