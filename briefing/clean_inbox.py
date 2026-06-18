@@ -31,19 +31,16 @@ MAILREACH_PATTERN = re.compile(r"[a-z0-9]{4,}-[a-zA-Z0-9]{3,}-[a-z0-9]{5,}-?", r
 
 
 def get_google_creds() -> Credentials:
-    token_data = {
-        "token":         os.environ["GOOGLE_TOKEN"],
-        "refresh_token": os.environ["GOOGLE_REFRESH_TOKEN"],
-        "token_uri":     "https://oauth2.googleapis.com/token",
-        "client_id":     os.environ["GOOGLE_CLIENT_ID"],
-        "client_secret": os.environ["GOOGLE_CLIENT_SECRET"],
-        "scopes":        SCOPES,
-    }
-    creds = Credentials.from_authorized_user_info(token_data, SCOPES)
-    if not creds.valid:
-        creds.refresh(Request())
+    creds = Credentials(
+        token=None,
+        refresh_token=os.environ["GOOGLE_REFRESH_TOKEN"],
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id=os.environ["GOOGLE_CLIENT_ID"],
+        client_secret=os.environ["GOOGLE_CLIENT_SECRET"],
+        scopes=SCOPES,
+    )
+    creds.refresh(Request())
     return creds
-
 
 def purge_mailreach_warmup(service) -> int:
     """
