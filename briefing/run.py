@@ -128,12 +128,19 @@ client calls, reviews, pitches). Note specifically what prep is likely needed.
 
     response = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=1000,
+        max_tokens=2048,
         messages=[{"role": "user", "content": prompt}],
     )
-    text = response.content[0].text.strip()
+     text = response.content[0].text.strip()
     text = text.replace("```json", "").replace("```", "").strip()
-    return json.loads(text)
+    if response.stop_reason == "max_tokens":
+        raise RuntimeError("Claude hit max_tokens limit — response truncated. Increase max_tokens.")
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as e:
+        print(f"JSON parse error at char {e.pos}: {e.msg}")
+        print(f"Raw Claude response:\n{text}")
+        raise
 
 
 # ── Email formatting ──────────────────────────────────────────────────────────
