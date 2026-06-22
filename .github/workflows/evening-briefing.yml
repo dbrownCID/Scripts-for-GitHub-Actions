@@ -23,9 +23,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r briefing/requirements.txt
 
-      - name: Debug line 134
-        run: sed -n '132,136p' briefing/run.py | cat -A
-
       - name: Run evening briefing
         env:
           ANTHROPIC_API_KEY:      ${{ secrets.ANTHROPIC_API_KEY }}
