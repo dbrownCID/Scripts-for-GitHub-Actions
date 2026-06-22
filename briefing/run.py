@@ -106,7 +106,7 @@ CALENDAR EVENTS (next 48 hours):
 INBOX EMAILS (last 72 hours):
 {json.dumps(emails, indent=2)}
 
-Analyse this data and return ONLY a JSON object — no markdown, no preamble — with this shape:
+Analyse this data and return ONLY a valid JSON object — no markdown, no preamble, no extra brackets — with EXACTLY this shape and no deviations:
 {{
   "unusual": [{{"text": "...", "meta": "..."}}],
   "prep":    [{{"text": "...", "meta": "..."}}],
@@ -136,9 +136,12 @@ client calls, reviews, pitches). Note specifically what prep is likely needed.
     if response.stop_reason == "max_tokens":
         raise RuntimeError("Claude hit max_tokens limit — response truncated. Increase max_tokens.")
     import re
-    # Fix common Claude JSON malformation: },{ or ],{ between top-level keys
-    text = re.sub(r'\]\s*,\s*\{("prep"|"commitments"|"unusual")\s*:', r'],"\1":', text)
-    text = re.sub(r'\]\s*\}\s*,\s*\{("prep"|"commitments"|"unusual")\s*:', r'],"\1":', text)
+    # Extract just the JSON object if wrapped in anything
+    match = re.search(r'\{.*\}', text, re.DOTALL)
+    if match:
+        text = match.group(0)
+    # Fix malformed section separators like ],[ or ],{" into ],"
+    text = re.sub(r'\]\s*[,]?\s*[\[\{]\s*"(prep|commitments|unusual)"\s*:', r'],"\1":', text)
     try:
         return json.loads(text)
     except json.JSONDecodeError as e:
