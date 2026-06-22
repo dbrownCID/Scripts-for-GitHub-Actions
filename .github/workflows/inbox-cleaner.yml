@@ -1,14 +1,20 @@
 name: Inbox Cleaner
 
 on:
-  schedule:
-    # Every 2 hours from 8am to 8pm Eastern (12:00–00:00 UTC)
+    schedule:
+    # Every hour from 8am to 8pm Eastern (12:00–00:00 UTC)
     - cron: "0 12 * * *"   # 8am ET
+    - cron: "0 13 * * *"   # 9am ET
     - cron: "0 14 * * *"   # 10am ET
+    - cron: "0 15 * * *"   # 11am ET
     - cron: "0 16 * * *"   # 12pm ET
+    - cron: "0 17 * * *"   # 1pm ET
     - cron: "0 18 * * *"   # 2pm ET
+    - cron: "0 19 * * *"   # 3pm ET
     - cron: "0 20 * * *"   # 4pm ET
+    - cron: "0 21 * * *"   # 5pm ET
     - cron: "0 22 * * *"   # 6pm ET
+    - cron: "0 23 * * *"   # 7pm ET
     - cron: "0 0  * * *"   # 8pm ET
   workflow_dispatch:        # also run manually from GitHub UI
 
