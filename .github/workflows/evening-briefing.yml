@@ -30,4 +30,14 @@ jobs:
           GOOGLE_CLIENT_SECRET:   ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_TOKEN:           ${{ secrets.GOOGLE_TOKEN }}
           GOOGLE_REFRESH_TOKEN:   ${{ secrets.GOOGLE_REFRESH_TOKEN }}
-        run: python briefing/run.py
+        run: |
+          python -c "
+          import re
+          with open('briefing/run.py', 'r') as f:
+              content = f.read()
+          fixed = re.sub(r'^\s+text = response\.content', '    text = response.content', content, flags=re.MULTILINE)
+          with open('briefing/run.py', 'w') as f:
+              f.write(fixed)
+          "
+          cat -A briefing/run.py | grep -n "text = response"
+          python briefing/run.py
