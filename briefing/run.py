@@ -131,7 +131,7 @@ client calls, reviews, pitches). Note specifically what prep is likely needed.
         max_tokens=2048,
         messages=[{"role": "user", "content": prompt}],
     )
-   text = response.content[0].text.strip()
+    text = response.content[0].text.strip()
     text = text.replace("```json", "").replace("```", "").strip()
     if response.stop_reason == "max_tokens":
         raise RuntimeError("Claude hit max_tokens limit — response truncated. Increase max_tokens.")
