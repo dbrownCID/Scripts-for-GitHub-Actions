@@ -135,10 +135,24 @@ client calls, reviews, pitches). Note specifically what prep is likely needed.
     text = text.replace("```json", "").replace("```", "").strip()
     if response.stop_reason == "max_tokens":
         raise RuntimeError("Claude hit max_tokens limit — response truncated. Increase max_tokens.")
+    import re, json as _json
     try:
-        return json.loads(text)
-    except json.JSONDecodeError as e:
-        print(f"JSON parse error at char {e.pos}: {e.msg}")
+        result = _json.loads(text)
+        # If Claude returned a list of 3 arrays instead of a dict, map them positionally
+        if isinstance(result, list) and len(result) == 3:
+            return {"unusual": result[0], "prep": result[1], "commitments": result[2]}
+        if isinstance(result, dict):
+            return result
+        raise ValueError(f"Unexpected Claude response structure: {type(result)}")
+    except _json.JSONDecodeError:
+        # Try extracting three JSON arrays positionally
+        arrays = re.findall(r'\[.*?\]', text, re.DOTALL)
+        if len(arrays) >= 3:
+            return {
+                "unusual":     _json.loads(arrays[0]),
+                "prep":        _json.loads(arrays[1]),
+                "commitments": _json.loads(arrays[2]),
+            }
         print(f"Raw Claude response:\n{text}")
         raise
 
