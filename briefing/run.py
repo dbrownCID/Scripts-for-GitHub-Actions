@@ -135,6 +135,9 @@ client calls, reviews, pitches). Note specifically what prep is likely needed.
     text = text.replace("```json", "").replace("```", "").strip()
     if response.stop_reason == "max_tokens":
         raise RuntimeError("Claude hit max_tokens limit — response truncated. Increase max_tokens.")
+    # Fix common Claude JSON malformation: ,[ instead of ,"
+    import re
+    text = re.sub(r',\s*\[("prep"|"commitments"|"unusual")\s*:', r',"\1":', text)
     try:
         return json.loads(text)
     except json.JSONDecodeError as e:
