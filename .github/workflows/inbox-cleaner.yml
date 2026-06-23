@@ -1,7 +1,7 @@
 name: Inbox Cleaner
 
 on:
-    schedule:
+  schedule:
     # Every hour from 8am to 8pm Eastern (12:00–00:00 UTC)
     - cron: "0 12 * * *"   # 8am ET
     - cron: "0 13 * * *"   # 9am ET
