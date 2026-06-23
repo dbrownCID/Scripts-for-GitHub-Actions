@@ -146,8 +146,18 @@ Emails to classify:
         max_tokens=1000,
         messages=[{"role": "user", "content": prompt}],
     )
+    import re as _re, json as _json
     text = response.content[0].text.strip().replace("```json", "").replace("```", "").strip()
-    return json.loads(text)
+    try:
+        return _json.loads(text)
+    except _json.JSONDecodeError:
+        # Extract trash and keep arrays directly if JSON is malformed
+        trash = _re.search(r'"trash"\s*:\s*(\[.*?\])', text, _re.DOTALL)
+        keep  = _re.search(r'"keep"\s*:\s*(\[.*?\])', text, _re.DOTALL)
+        return {
+            "trash": _json.loads(trash.group(1)) if trash else [],
+            "keep":  _json.loads(keep.group(1))  if keep  else [],
+        }
 
 
 def trash_emails(service, ids: list[str]):
