@@ -82,6 +82,7 @@ def fetch_candidate_emails(service) -> list[dict]:
 
         messages.append({
             "id":         msg["id"],
+            "thread_id":  m.get("threadId", ""),
             "subject":    headers.get("Subject", "(no subject)"),
             "from":       headers.get("From", ""),
             "to":         headers.get("To", ""),
@@ -167,9 +168,12 @@ def save_draft(service, email: dict, draft: dict):
     msg.attach(MIMEText(body, "plain"))
 
     raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+    body = {"message": {"raw": raw}}
+    if email.get("thread_id"):
+        body["message"]["threadId"] = email["thread_id"]
     service.users().drafts().create(
         userId="me",
-        body={"message": {"raw": raw, "threadId": email["id"]}}
+        body=body
     ).execute()
     print(f"  ✉  Draft saved: {draft['draft_subject']} → {email['from']}")
     print(f"     Reason: {draft['reason']}")
